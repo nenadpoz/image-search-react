@@ -1,24 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import React, { useState } from "react";
+
+import ImageList from "./components/ImageList";
+import SearchBar from "./components/SearchBar";
+import unsplash from "./api/unsplash";
 
 function App() {
+  const [resultFromApi, setResultFromApi] = useState({});
+  const onSearchSubmit = async term => {
+    const response = await unsplash.get("/search/photos/", {
+      params: {
+        query: term
+      }
+    });
+
+    setResultFromApi(response.data);
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SearchBar onSearch={onSearchSubmit}></SearchBar>
+      {resultFromApi.results ? (
+        <ImageList list={resultFromApi.results} />
+      ) : null}
     </div>
   );
 }
